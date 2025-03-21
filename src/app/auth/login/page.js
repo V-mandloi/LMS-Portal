@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { showToast } from "@/app/components/showToaster";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -20,15 +20,18 @@ const SignIn = () => {
         body: JSON.stringify(formData),
       });
 
+      const data = await res.json();
+      console.log(data);
+
       if (!res.ok) {
-        const { message } = await res.json();
-        throw new Error(message || "Failed to login");
+        throw new Error(data.message || "Failed to login");
       }
 
-      const { token } = await res.json();
-      localStorage.setItem("token", token);
+      showToast("success", "Login successful! 🎉");
+      sessionStorage.setItem("token", data.token);
       router.push("/");
     } catch (err) {
+      showToast("error", err.message);
       setError(err.message);
     }
   };
@@ -36,23 +39,11 @@ const SignIn = () => {
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a
-          href="#"
-          className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
-        >
-          <img
-            className="w-8 h-8 mr-2"
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
-            alt="logo"
-          />
-          Flowbite
-        </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign in to your account
             </h1>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
@@ -100,16 +91,16 @@ const SignIn = () => {
               >
                 Sign in
               </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don’t have an account yet?{" "}
-                <Link
-                  href="/auth/register"
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                >
-                  Sign up
-                </Link>
-              </p>
             </form>
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{" "}
+              <a
+                href="/auth/register"
+                className="text-primary-600 hover:underline"
+              >
+                Sign up
+              </a>
+            </p>
           </div>
         </div>
       </div>

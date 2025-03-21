@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import logo from "@/app/assets/logo.png";
+import { showToast } from "@/app/components/showToaster";
 
 const AuthForm = () => {
   const [formData, setFormData] = useState({
@@ -28,9 +29,10 @@ const AuthForm = () => {
         const { message } = await res.json();
         throw new Error(message || "Failed to register");
       }
-
+      showToast("success", "Register successful! 🎉");
       router.push("/auth/login");
     } catch (err) {
+      showToast("error", err.message);
       setError(err.message);
     }
   };
@@ -49,7 +51,6 @@ const AuthForm = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Register your account
             </h1>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label

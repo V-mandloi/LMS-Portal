@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  name: String,
+  email: String,
+  password: String,
+  phone: String,
+  speciality: String,
 });
 
 // Hash password before saving

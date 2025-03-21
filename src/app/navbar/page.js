@@ -15,9 +15,9 @@ import Logo from "@/app/assets/logo.png";
 
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
+  { name: "Courses", href: "#", current: false },
+  { name: "My Courses", href: "#", current: false },
+  // { name: "Calendar", href: "#", current: false },
 ];
 
 function classNames(...classes) {
@@ -104,7 +104,7 @@ export default function Example() {
               >
                 <MenuItem>
                   <a
-                    href="#"
+                    href="/profile"
                     className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                   >
                     Your Profile
