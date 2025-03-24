@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import logo from "@/app/assets/logo.png";
 import { showToast } from "@/app/components/showToaster";
+import { useFetchImage } from "@/app/hooks/usefetchimages";
 
 const AuthForm = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const AuthForm = () => {
   });
   const [error, setError] = useState(null);
   const router = useRouter();
+  const { imageUrl: logoUrl, error: logoError } = useFetchImage("logo.png");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +46,11 @@ const AuthForm = () => {
           href="#"
           className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
         >
-          <img className="w-8 h-8 mr-2" src={logo} alt="logo" />
+          {logoUrl ? (
+            <img alt="portal logo" src={logoUrl} className="size-25 w-40 " />
+          ) : (
+            <p>Loading logo...</p>
+          )}
         </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">

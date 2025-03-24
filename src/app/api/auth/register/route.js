@@ -4,6 +4,7 @@ import User from "@/app/models/user";
 export async function POST(req) {
   try {
     await connectToDatabase();
+
     const { username, email, password } = await req.json();
 
     if (!username || !email || !password) {

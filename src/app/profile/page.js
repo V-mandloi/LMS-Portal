@@ -5,6 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { showToast } from "../components/showToaster";
 import { FaUserTie, FaBuilding } from "react-icons/fa";
+import { useFetchImage } from "@/app/hooks/usefetchimages";
 
 const Profile = () => {
   const [user, setUser] = useState({
@@ -19,6 +20,9 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false); // New state for editing mode
   const router = useRouter();
   const token = sessionStorage.getItem("token");
+
+  const { imageUrl: profileUrl, error: profileError } =
+    useFetchImage("profile.png");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -68,11 +72,15 @@ const Profile = () => {
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-gray-800 text-white shadow-lg rounded-lg">
       {/* Profile Header */}
       <div className="flex items-center space-x-4 border-b pb-4">
-        <img
-          src="/profile-placeholder.png"
-          alt="Profile"
-          className="w-16 h-16 rounded-full border"
-        />
+        {profileUrl ? (
+          <img
+            alt="User Profile"
+            src={profileUrl}
+            className="w-20 h-20 rounded-full border object-cover"
+          />
+        ) : (
+          <p>Loading profile...</p>
+        )}
         <div>
           <h2 className="text-xl font-bold">{user.username}</h2>
           <p className="text-gray-400">{user.email}</p>
