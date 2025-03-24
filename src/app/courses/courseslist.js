@@ -10,6 +10,7 @@ export default function CoursesList() {
     description: "",
     price: "",
     instructor: "",
+    image: "",
   });
 
   console.log("Courses:", courses); // Debugging log
@@ -18,7 +19,13 @@ export default function CoursesList() {
   const handleSubmit = (e) => {
     e.preventDefault();
     addCourse(newCourse);
-    setNewCourse({ title: "", description: "", price: "", instructor: "" });
+    setNewCourse({
+      title: "",
+      description: "",
+      price: "",
+      instructor: "",
+      image: "",
+    });
   };
 
   if (loading) return <p>Loading...</p>;
@@ -27,7 +34,7 @@ export default function CoursesList() {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Available Courses</h1>
-      <form onSubmit={handleSubmit} className="mb-6">
+      <form onSubmit={handleSubmit} className="mb-6 flex flex-wrap gap-2">
         <input
           type="text"
           placeholder="Title"
@@ -35,7 +42,7 @@ export default function CoursesList() {
           onChange={(e) =>
             setNewCourse({ ...newCourse, title: e.target.value })
           }
-          className="border p-2 mr-2"
+          className="border p-2"
           required
         />
         <input
@@ -45,40 +52,63 @@ export default function CoursesList() {
           onChange={(e) =>
             setNewCourse({ ...newCourse, description: e.target.value })
           }
-          className="border p-2 mr-2"
+          className="border p-2"
           required
         />
         <input
           type="number"
-          placeholder="price"
+          placeholder="Price"
           value={newCourse.price}
           onChange={(e) =>
             setNewCourse({ ...newCourse, price: e.target.value })
           }
-          className="border p-2 mr-2"
+          className="border p-2"
           required
         />
         <input
           type="text"
-          placeholder="instructor"
+          placeholder="Instructor"
           value={newCourse.instructor}
           onChange={(e) =>
             setNewCourse({ ...newCourse, instructor: e.target.value })
           }
-          className="border p-2 mr-2"
+          className="border p-2"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Image URL"
+          value={newCourse.image}
+          onChange={(e) =>
+            setNewCourse({ ...newCourse, image: e.target.value })
+          }
+          className="border p-2"
           required
         />
         <button type="submit" className="bg-blue-500 text-white p-2">
           Add Course
         </button>
       </form>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <div key={course.id} className="bg-white shadow-md rounded-lg p-4">
-            <h2 className="text-xl font-semibold">{course.title}</h2>
-            <p className="text-gray-600">{course.description}</p>
-            <p className="text-gray-600">{course.price}</p>
-            <p className="text-gray-600">{course.instructor}</p>
+          <div
+            key={course.id}
+            className="hover:bg-gray-700 bg-gray-600 rounded-lg shadow-md overflow-hidden transition border border-transparent hover:border-gray-500"
+          >
+            <img
+              src={course.image}
+              alt={course.title}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <h2 className="text-xl font-semibold">{course.title}</h2>
+              <p className="white">{course.description}</p>
+              <p className="white font-bold">${course.price}</p>
+              <p className="white italic">By {course.instructor}</p>
+              <button className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                Enroll Now
+              </button>
+            </div>
           </div>
         ))}
       </div>
