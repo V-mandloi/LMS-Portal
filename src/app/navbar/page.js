@@ -13,7 +13,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useFetchImage } from "@/app/hooks/usefetchimages"; // Correct import
+import { useFetchImage } from "@/app/hooks/usefetchimages";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -35,6 +35,20 @@ export default function Navbar() {
   if (pathname === "/auth/login" || pathname === "/auth/register") {
     return null;
   }
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+
+      if (res.ok) {
+        router.push("/auth/login"); // Redirect to login page
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -89,7 +103,7 @@ export default function Navbar() {
                   Courses
                 </Link>
                 <Link
-                  href="/my-courses"
+                  href="/mycourses"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >
                   My Courses
@@ -144,7 +158,10 @@ export default function Navbar() {
                   </a>
                 </MenuItem>
                 <MenuItem>
-                  <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <button
+                    onClick={handleLogout}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
                     Sign out
                   </button>
                 </MenuItem>

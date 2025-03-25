@@ -5,7 +5,7 @@ let isConnected = false; // Track the connection status
 export async function connectToDatabase() {
   if (isConnected) {
     console.log("Using existing database connection");
-    return;
+    return { db: mongoose.connection }; // Explicitly return the connection
   }
 
   try {
@@ -15,6 +15,7 @@ export async function connectToDatabase() {
     });
     isConnected = db.connections[0].readyState === 1;
     console.log("Connected to MongoDB");
+    return { db: mongoose.connection }; // Explicitly return the connection
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     throw new Error("Database connection failed");

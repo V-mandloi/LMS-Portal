@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   password: String,
   phone: String,
   speciality: String,
+  enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
 });
 
 // Hash password before saving

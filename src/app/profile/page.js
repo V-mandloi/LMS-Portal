@@ -36,6 +36,7 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
+        console.log(res.data);
       } catch (err) {
         showToast("Failed to fetch user data");
         setError("Failed to fetch user data");

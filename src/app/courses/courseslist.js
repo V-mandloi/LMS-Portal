@@ -1,20 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useCourses from "@/app/hooks/useCourses";
+import { decodeToken } from "@/app/utils/auth";
+import { useFetchImage } from "@/app/hooks/usefetchimages";
 
 export default function CoursesList() {
   const { courses, loading, addCourse } = useCourses();
   const [newCourse, setNewCourse] = useState({
+    id: "",
     title: "",
     description: "",
     price: "",
     instructor: "",
     image: "",
   });
+  const [feedback, setFeedback] = useState("");
+  const [userId, setUserId] = useState(null);
 
-  console.log("Courses:", courses); // Debugging log
-  console.log("Loading:", loading);
+  // Fetch images once
+  const { imageUrl: course1, error: course1Error } =
+    useFetchImage("course1.jpg");
+  const { imageUrl: course2, error: course2Error } =
+    useFetchImage("course2.jpg");
+  const { imageUrl: course3, error: course3Error } =
+    useFetchImage("course3.jpg");
+  console.log("course1", course1);
+  const courseImages = [
+    { imageUrl: course1, name: "Course 1", error: course1Error },
+    { imageUrl: course2, name: "Course 2", error: course2Error },
+    { imageUrl: course3, name: "Course 3", error: course3Error },
+  ];
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const decoded = decodeToken(token);
+      if (decoded && decoded.id) {
+        setUserId(decoded.id);
+        console.log("USERid", decoded.id);
+      } else {
+        console.error("Invalid token or missing user ID");
+      }
+    }
+  }, []);
+
+  const handleEnroll = async (courseId) => {
+    if (!userId) {
+      setFeedback("User not authenticated. Please log in.");
+      return;
+    }
+
+    try {
+      console.log("course", courseId);
+      const response = await fetch("/api/enroll/putCourses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, courseId }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setFeedback(data.message); // Show success message
+      } else {
+        setFeedback(data.message || "Failed to enroll in the course");
+      }
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      setFeedback("An error occurred. Please try again.");
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -89,28 +146,47 @@ export default function CoursesList() {
           Add Course
         </button>
       </form>
+      {feedback && <p className="text-green-500 mb-4">{feedback}</p>}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.map((course) => (
-          <div
-            key={course.id}
-            className="hover:bg-gray-700 bg-gray-600 rounded-lg shadow-md overflow-hidden transition border border-transparent hover:border-gray-500"
-          >
-            <img
-              src={course.image}
-              alt={course.title}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold">{course.title}</h2>
-              <p className="white">{course.description}</p>
-              <p className="white font-bold">${course.price}</p>
-              <p className="white italic">By {course.instructor}</p>
-              <button className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
-                Enroll Now
-              </button>
+        {courses.map((course, index) => {
+          // Use modulo to cycle through images
+          const imageIndex = index % courseImages.length;
+          const { imageUrl, name, error } = courseImages[imageIndex];
+
+          return (
+            <div
+              key={course.id}
+              className="hover:bg-gray-700 bg-gray-600 rounded-lg shadow-md overflow-hidden transition border border-transparent hover:border-gray-500"
+            >
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={name}
+                  className="w-full h-48 object-cover"
+                />
+              ) : (
+                <p>Loading {name}...</p>
+              )}
+              {error && (
+                <p className="text-red-500">
+                  Error loading {name}: {error}
+                </p>
+              )}
+              <div className="p-4">
+                <h2 className="text-xl font-semibold">{course.title}</h2>
+                <p className="white">{course.description}</p>
+                <p className="white font-bold">${course.price}</p>
+                <p className="white italic">By {course.instructor}</p>
+                <button
+                  onClick={() => handleEnroll(course.id || course._id)}
+                  className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                >
+                  Enroll Now
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
